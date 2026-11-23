@@ -80,48 +80,7 @@ telemetry → schema → chord → tui → codemode → mcp → ai → durable �
 
 ![模块层级与依赖关系图](screenshots/S3-dependency-graph.png)
 
-可编辑图源：[`graph/dependencies.mmd`](graph/dependencies.mmd)。同一份 Mermaid 源码如下（GitHub 会直接渲染）：
-
-```mermaid
-flowchart TD
-    subgraph L3["L3 应用层（入口与部署）"]
-        CA["coding-agent<br/>CLI 应用 pi"]
-        ENV["env<br/>远程执行环境"]
-    end
-    subgraph L2["L2 编排层（agent 运行时）"]
-        AG["agent<br/>agent 循环"]
-        DU["durable<br/>持久化运行时"]
-    end
-    subgraph L1["L1 运行时层（通用运行时）"]
-        AI["ai<br/>统一 LLM API"]
-        CH["chord<br/>跨进程对象运行时"]
-    end
-    subgraph L0["L0 基础层（无内部依赖）"]
-        TE["telemetry<br/>遥测契约"]
-        SC["schema<br/>JSON Schema"]
-        TUI["tui<br/>终端 UI"]
-        CM["codemode<br/>QuickJS 沙箱"]
-        MCP["mcp<br/>MCP 客户端"]
-    end
-    CA --> AG
-    CA --> AI
-    CA --> CM
-    CA --> MCP
-    CA --> TUI
-    ENV --> CH
-    ENV --> DU
-    AG --> AI
-    AG --> SC
-    DU --> CH
-    DU --> AI
-    DU --> CM
-    DU --> SC
-    DU --> TE
-    AI --> SC
-    AI --> TE
-    CH --> SC
-    CH --> TE
-```
+可编辑图源：[`graph/dependencies.mmd`](graph/dependencies.mmd)（Mermaid `flowchart` 源码，箭头方向为使用方 → 被依赖方）。
 
 **层级划分依据：** 以“直接依赖的最长链”计算拓扑深度，而不是按目录名或构建顺序猜测。L0 的五个包没有任何内部依赖；L1 的 `chord`、`ai` 只依赖 L0；L2 的 `durable`、`agent` 依赖到 L1；L3 的 `env`、`coding-agent` 站在这条链的最上层。同层模块之间没有依赖边，例如 `chord` 与 `ai`、`durable` 与 `agent` 都互不引用。
 
