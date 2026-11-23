@@ -1,0 +1,40 @@
+%% 箭头方向：使用方 → 被依赖方（A --> B 表示 A 直接依赖 B）
+%% 依据：各子包 package.json 的 dependencies 字段；图中不含内部 devDependencies / peerDependencies
+flowchart TD
+    subgraph L3["L3 应用层（入口与部署）"]
+        CA["coding-agent<br/>CLI 应用 pi"]
+        ENV["env<br/>远程执行环境"]
+    end
+    subgraph L2["L2 编排层（agent 运行时）"]
+        AG["agent<br/>agent 循环"]
+        DU["durable<br/>持久化运行时"]
+    end
+    subgraph L1["L1 运行时层（通用运行时）"]
+        AI["ai<br/>统一 LLM API"]
+        CH["chord<br/>跨进程对象运行时"]
+    end
+    subgraph L0["L0 基础层（无内部依赖）"]
+        TE["telemetry<br/>遥测契约"]
+        SC["schema<br/>JSON Schema"]
+        TUI["tui<br/>终端 UI"]
+        CM["codemode<br/>QuickJS 沙箱"]
+        MCP["mcp<br/>MCP 客户端"]
+    end
+    CA --> AG
+    CA --> AI
+    CA --> CM
+    CA --> MCP
+    CA --> TUI
+    ENV --> CH
+    ENV --> DU
+    AG --> AI
+    AG --> SC
+    DU --> CH
+    DU --> AI
+    DU --> CM
+    DU --> SC
+    DU --> TE
+    AI --> SC
+    AI --> TE
+    CH --> SC
+    CH --> TE
